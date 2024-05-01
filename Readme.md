@@ -91,11 +91,7 @@ Error: Failed to pull image "nginx:latest1": rpc error: code = NotFound desc = f
 Details: The error message indicates that Docker was unable to find the specified image "nginx:latest1" in the Docker Hub repository. It seems that the image tag "latest1" is incorrect or does not exist.
 
 To resolve this issue, you may need to specify a valid image tag for the Nginx image. The correct tag for the latest version of the Nginx image is usually just "nginx:latest". You can try pulling the image again using the correct tag:
-
-```
 docker pull nginx:latest
-```
-
 This should successfully pull the Nginx image with the latest tag from the Docker Hub repository.
 
 Kind: Pod

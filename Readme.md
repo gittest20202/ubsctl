@@ -1,36 +1,42 @@
-#UBSDCTL
-This Repo is to analyse the Pods and Deployment Status of your Cluster Environment
+# Kubernetes Analyzer Tool
 
 
 ![test (1)](https://github.com/gittest20202/ubsctl/assets/65268854/f56fdf11-11ab-4af3-b560-275c5c4adedf)
 
-
-
-#Prerequisite
-1. openai must be installed
-2. kubernetes sdk must be installed
-3. argparse module must be installed
-
-export OPENAI_API_KEY="sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-
-##Use the following steps to use it
+## Prerequisites
+- `openai`, `kubernetes`, and `argparse` modules must be installed.
+- Obtain an OpenAI API key and export it as an environment variable:
+  ```bash
+  export OPENAI_API_KEY="sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  ```
+  
+## Installation
 ```bash
 root@master:~/ubsctl# kubectl get nodes
 NAME                   STATUS   ROLES           AGE     VERSION
 master.arobyte.tech    Ready    control-plane   4h51m   v1.29.4
 worker1.arobyte.tech   Ready    <none>          85m     v1.29.4
 worker2.arobyte.tech   Ready    <none>          78m     v1.29.4
+```
 
+## Clone Repository
+```bash
 root@master:~# git clone https://github.com/gittest20202/ubsctl.git
-
+```
+## Move the Directory
+```bash
 root@master:~# cd ubsctl/
-
+```
+```bash
 root@master:~/ubsctl# ls
 modules  ubsctl.py
-
+```
+## Alias the Command
+```bash
 root@master:~/ubsctl# alias ubsctl="python3 ubsctl.py"
 ```
-##Run ubsctl to analyse pods
+
+## Run ubsctl to analyse pods
 ```bash
 root@master:~/ubsctl# ubsctl
 ========================================
@@ -44,14 +50,18 @@ options:
   -h, --help            show this help message and exit
   -k {pod,deploy}, --kind {pod,deploy}
                         Specify the resource kind (pod or deploy)
-
+```
+## Verify the available command
+```bash
 root@master:~/ubsctl# ubsctl analyser -k
 ========================================
 Welcome to the UBS Kubernetes Analyzer Tool!
 ========================================
 usage: ubsctl.py analyser [-h] [-k {pod,pods,deploy,deployment}] [-n NAMESPACE] [-d DEPLOYMENT]
 ubsctl.py analyser: error: argument -k/--kind: expected one argument
-
+```
+## Run analyser on namespace with deployment
+```bash
 root@master:~/ubsctl# ubsctl analyser -k deploy -n default
 ========================================
 Welcome to the UBS Kubernetes Analyzer Tool!
@@ -66,6 +76,9 @@ options:
                         Specify the namespace
   -d DEPLOYMENT, --deployment DEPLOYMENT
                         Specify the deployment name
+```
+## Run Analyser on Pod
+```bash
 root@master:~/ubsctl# ubsctl analyser -k pod
 ========================================
 Welcome to the UBS Kubernetes Analyzer Tool!
@@ -129,7 +142,7 @@ To troubleshoot this issue, you can check the following:
 By addressing these potential issues, you should be able to resolve the 'ImagePullBackOff' status of the pod.
 
 ```
-##Run ubsctl to analyse Deployments
+## Run ubsctl to analyse Deployments
 ```bash
 root@master:~/ubsctl# ubsctl analyser -k deploy
 ========================================
@@ -142,7 +155,7 @@ Error: Deployment default/nginx-deployment has 2 replicas but  None is/are avail
 Details: This means that although the deployment is set to have 2 replicas, none of the replicas are currently available for some reason. This could be due to issues such as resource constraints, network problems, or other issues that may be preventing the replicas from being available. It is recommended to investigate the specific cause of the unavailability and take appropriate action to resolve the issue.
 ```
 
-##Run ubsctl to analyse Namespace with Deployment
+## Run ubsctl to analyse Namespace with Deployment
 ```bash
 root@master:~/ubsctl# ubsctl analyser -k deploy -n default
 ========================================
@@ -158,7 +171,9 @@ options:
                         Specify the namespace
   -d DEPLOYMENT, --deployment DEPLOYMENT
                         Specify the deployment name
+```
 
+```bash
 root@master:~/ubsctl# ubsctl analyser -k deploy -n default -d nginx-deployment
 ========================================
 Welcome to the UBS Kubernetes Analyzer Tool!

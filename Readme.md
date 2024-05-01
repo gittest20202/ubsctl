@@ -51,6 +51,25 @@ options:
   -k {pod,deploy}, --kind {pod,deploy}
                         Specify the resource kind (pod or deploy)
 ```
+
+## Help Command
+```bash
+root@master:~/ubsctl# ubsctl analyser -h
+========================================
+Welcome to the UBS Kubernetes Analyzer Tool!
+========================================
+usage: ubsctl.py analyser [-h] [-k {pod,pods,deploy,deployment}] [-n NAMESPACE] [-d DEPLOYMENT]
+
+options:
+  -h, --help            show this help message and exit
+  -k {pod,pods,deploy,deployment}, --kind {pod,pods,deploy,deployment}
+                        Specify the resource kind (pod/pods or deploy/deployment)
+  -n NAMESPACE, --namespace NAMESPACE
+                        Specify the namespace
+  -d DEPLOYMENT, --deployment DEPLOYMENT
+                        Specify the deployment name
+```
+
 ## Verify the available command
 ```bash
 root@master:~/ubsctl# ubsctl analyser -k

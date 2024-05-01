@@ -1,11 +1,11 @@
 #UBSDCTL
 This Repo is to analyse the Pods and Deployment Status of your Cluster Environment
+![test (1)](https://github.com/gittest20202/ubsctl/assets/65268854/f56fdf11-11ab-4af3-b560-275c5c4adedf)
 
 
-https://github.com/gittest20202/ubsctl/assets/65268854/877bfe15-28de-40df-b97a-2c6df67c2e25
 
 #Prerequisite
-1. openai must be insstalled
+1. openai must be installed
 2. kubernetes sdk must be installed
 3. argparse module must be installed
 

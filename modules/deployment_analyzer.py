@@ -29,4 +29,27 @@ class DeploymentAnalyzer:
                     }
                     results.append(result)
         return results
-
+    def analyze_deployments_ns(self, namespace=None, deployment_name=None):
+        config.load_kube_config()
+        api_instance = client.AppsV1Api()
+        results = []
+        with contextlib.suppress(client.exceptions.ApiException):
+            if namespace and deployment_name:
+                deployment = api_instance.read_namespaced_deployment(name=deployment_name, namespace=namespace)
+                failures = []
+                replicas = deployment.spec.replicas
+                available_replicas = deployment.status.available_replicas
+                if replicas != available_replicas:
+                   failures.append({
+                          "text": f"Deployment {deployment.metadata.namespace}/{deployment.metadata.name} has {replicas} replicas but  {available_replicas} is/are available",
+                          "kubernetes_doc": {"version": "v1", "group": "apps", "kind": "Deployment", "field": "spec.replicas"}
+                      })
+                if failures:
+                      result = {
+                        "kind": "Deployment",
+                        "name": f"{deployment.metadata.namespace}/{deployment.metadata.name}",
+                        "type": "error",
+                        "errors": failures
+                     }
+                      results.append(result)
+        return results

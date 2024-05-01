@@ -4,6 +4,12 @@ This Repo is to analyse the Pods and Deployment Status of your Cluster Environme
 
 https://github.com/gittest20202/ubsctl/assets/65268854/877bfe15-28de-40df-b97a-2c6df67c2e25
 
+#Prerequisite
+1. openai must be insstalled
+2. kubernetes sdk must be installed
+3. argparse module must be installed
+
+export OPENAI_API_KEY="sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 ##Use the following steps to use it
 ```bash
@@ -37,133 +43,132 @@ options:
   -k {pod,deploy}, --kind {pod,deploy}
                         Specify the resource kind (pod or deploy)
 
-root@master:~/ubsctl# ubsctl -k
+root@master:~/ubsctl# ubsctl analyser -k
 ========================================
 Welcome to the UBS Kubernetes Analyzer Tool!
 ========================================
-usage: ubsctl.py [-h] [-k {pod,deploy}]
-ubsctl.py: error: argument -k/--kind: expected one argument
+usage: ubsctl.py analyser [-h] [-k {pod,pods,deploy,deployment}] [-n NAMESPACE] [-d DEPLOYMENT]
+ubsctl.py analyser: error: argument -k/--kind: expected one argument
 
-root@master:~/ubsctl# ubsctl -k pod
+root@master:~/ubsctl# ubsctl analyser -k deploy -n default
+========================================
+Welcome to the UBS Kubernetes Analyzer Tool!
+========================================
+usage: ubsctl.py analyser [-h] [-k {pod,pods,deploy,deployment}] [-n NAMESPACE] [-d DEPLOYMENT]
+
+options:
+  -h, --help            show this help message and exit
+  -k {pod,pods,deploy,deployment}, --kind {pod,pods,deploy,deployment}
+                        Specify the resource kind (pod/pods or deploy/deployment)
+  -n NAMESPACE, --namespace NAMESPACE
+                        Specify the namespace
+  -d DEPLOYMENT, --deployment DEPLOYMENT
+                        Specify the deployment name
+root@master:~/ubsctl# ubsctl analyser -k pod
 ========================================
 Welcome to the UBS Kubernetes Analyzer Tool!
 ========================================
 Kind: Pod
-Name: default/my-deployment
+Name: default/nginx-deployment-58b5f6b8f-584ql
 Type: Warning
 Reason: FailedScheduling
-Message: 0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) had untolerated taint {node.kubernetes.io/not-ready: }. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+Error: 0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 Insufficient cpu, 2 Insufficient memory. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
+Details: It seems that all nodes in the cluster are currently unavailable for scheduling due to various reasons:
+
+1. One node has a taint that is not tolerated by the incoming pod.
+2. Two nodes have insufficient CPU resources.
+3. Two nodes have insufficient memory.
+
+Additionally, preemption is not helpful for scheduling in this case as there are no preemption victims found for the incoming pod.
+
+To resolve this issue, you may need to either adjust the resource requests/limits of the incoming pod or add more nodes with sufficient resources to the cluster. Additionally, you may need to reconfigure the taints on the nodes to allow scheduling of the incoming pod.
 
 Kind: Pod
-Name: default/my-deployment
-Type: Warning
-Reason: FailedCreatePodSandBox
-Message: Failed to create pod sandbox: rpc error: code = Unknown desc = failed to setup network for sandbox "eed0dc1ea712dec66d7507d5aba5264c183a11230aa95c4827e0cb24921d758d": plugin type="calico" failed (add): stat /var/lib/calico/nodename: no such file or directory: check that the calico/node container is running and has mounted /var/lib/calico/
-
-Kind: Pod
-Name: default/my-deployment
-Type: Warning
-Reason: Failed
-Message: Failed to pull image "nginx1": failed to pull and unpack image "docker.io/library/nginx1:latest": failed to resolve reference "docker.io/library/nginx1:latest": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
-
-Kind: Pod
-Name: default/my-deployment
+Name: default/nginx-deployment-7c6579b84d-blcq7
 Type: Warning
 Reason: Failed
-Message: Error: ErrImagePull
+Error: Failed to pull image "nginx:latest1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/nginx:latest1": failed to resolve reference "docker.io/library/nginx:latest1": docker.io/library/nginx:latest1: not found
+Details: The error message indicates that Docker was unable to find the specified image "nginx:latest1" in the Docker Hub repository. It seems that the image tag "latest1" is incorrect or does not exist.
+
+To resolve this issue, you may need to specify a valid image tag for the Nginx image. The correct tag for the latest version of the Nginx image is usually just "nginx:latest". You can try pulling the image again using the correct tag:
+
+```
+docker pull nginx:latest
+```
+
+This should successfully pull the Nginx image with the latest tag from the Docker Hub repository.
 
 Kind: Pod
-Name: default/my-deployment
+Name: default/nginx-deployment-7c6579b84d-blcq7
 Type: Warning
-Reason: Failed
-Message: Error: ImagePullBackOff
+Reason: PodStatusCondition
+Error: Pod status is 'ImagePullBackOff'
+Details: The 'ImagePullBackOff' status typically indicates that the container runtime is unable to pull the image for the pod. This could be due to various reasons such as incorrect image name or tag, network issues, or permission problems.
+
+To troubleshoot this issue, you can try the following steps:
+
+1. Check the image name and tag specified in the pod definition file to ensure they are correct.
+2. Verify that the image registry is accessible and the repository you are trying to pull from is also accessible.
+3. Check the network connectivity of the node where the pod is scheduled to ensure it can reach the image registry.
+4. Check the credentials for accessing the image registry, if authentication is required.
+5. Check the pod logs for any specific error messages that may provide more information about why the image pull is failing.
+
+By following these steps, you should be able to identify and resolve the issue causing the 'ImagePullBackOff' status for the pod.
 
 Kind: Pod
-Name: kube-system/calico-kube-controllers-7d64c8fdd5-pmfg5
+Name: default/nginx-deployment-7c6579b84d-lqwkb
 Type: Warning
-Reason: FailedScheduling
-Message: 0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) had untolerated taint {node.kubernetes.io/not-ready: }. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+Reason: PodStatusCondition
+Error: Pod status is 'ImagePullBackOff'
+Details: The 'ImagePullBackOff' status typically indicates that the pod is unable to download the container image specified in its configuration. This could be due to various reasons such as incorrect image name, image not found in the repository, or authentication issues.
 
-Kind: Pod
-Name: kube-system/calico-kube-controllers-7d64c8fdd5-pmfg5
-Type: Warning
-Reason: FailedCreatePodSandBox
-Message: Failed to create pod sandbox: rpc error: code = Unknown desc = failed to setup network for sandbox "79e68ca3bc99a326059bf6610c4fdabd4897547d8c4430edfeff1ff65dd21d85": plugin type="calico" failed (add): stat /var/lib/calico/nodename: no such file or directory: check that the calico/node container is running and has mounted /var/lib/calico/
+To troubleshoot this issue, you can check the following:
+1. Verify that the image name and tag specified in the pod configuration are correct.
+2. Make sure that the image exists in the container registry that the cluster has access to.
+3. Check if there are any network issues preventing the pod from downloading the image.
+4. Verify the container registry credentials if the image is private.
 
-Kind: Pod
-Name: kube-system/calico-node-4vlkg
-Type: Warning
-Reason: Unhealthy
-Message: Readiness probe failed: command "/bin/calico-node -felix-ready -bird-ready" timed out
-
-Kind: Pod
-Name: kube-system/calico-node-4vlkg
-Type: Warning
-Reason: Unhealthy
-Message: Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/bird/bird.ctl: connect: no such file or directory
-
-Kind: Pod
-Name: kube-system/calico-node-4vlkg
-Type: Warning
-Reason: Unhealthy
-Message: Readiness probe failed: 2024-04-30 16:09:47.950 [INFO][622] confd/health.go 180: Number of node(s) with BGP peering established = 0
-calico/node is not ready: BIRD is not ready: BGP not established with 172.16.16.102
-
-Kind: Pod
-Name: kube-system/etcd-master.arobyte.tech
-Type: Warning
-Reason: Unhealthy
-Message: Startup probe failed: Get "http://127.0.0.1:2381/health?serializable=false": dial tcp 127.0.0.1:2381: connect: connection refused
-
-Kind: Pod
-Name: kube-system/kube-apiserver-master.arobyte.tech
-Type: Warning
-Reason: Unhealthy
-Message: Startup probe failed: Get "https://192.168.0.114:6443/livez": dial tcp 192.168.0.114:6443: connect: connection refused
-
-Kind: Pod
-Name: kube-system/kube-apiserver-master.arobyte.tech
-Type: Warning
-Reason: Unhealthy
-Message: Startup probe failed: HTTP probe failed with statuscode: 403
-
-Kind: Pod
-Name: kube-system/kube-controller-manager-master.arobyte.tech
-Type: Warning
-Reason: Unhealthy
-Message: Startup probe failed: Get "https://127.0.0.1:10257/healthz": dial tcp 127.0.0.1:10257: connect: connection refused
-
-Kind: Pod
-Name: kube-system/kube-scheduler-master.arobyte.tech
-Type: Warning
-Reason: Unhealthy
-Message: Startup probe failed: Get "https://127.0.0.1:10259/healthz": dial tcp 127.0.0.1:10259: connect: connection refused
-
-Kind: Pod
-Name: test/my-deployment
-Type: Warning
-Reason: FailedScheduling
-Message: 0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) had untolerated taint {node.kubernetes.io/not-ready: }. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
-
-Kind: Pod
-Name: test/my-deployment
-Type: Warning
-Reason: FailedCreatePodSandBox
-Message: Failed to create pod sandbox: rpc error: code = Unknown desc = failed to setup network for sandbox "be450de8f1899763cfb60dcff7839de0b4fd3ceaebb4cee7a248eb65df8bfc43": plugin type="calico" failed (add): stat /var/lib/calico/nodename: no such file or directory: check that the calico/node container is running and has mounted /var/lib/calico/
+By addressing these potential issues, you should be able to resolve the 'ImagePullBackOff' status of the pod.
 
 ```
 ##Run ubsctl to analyse Deployments
 ```bash
-root@master:~/ubsctl# ubsctl -k deploy
+root@master:~/ubsctl# ubsctl analyser -k deploy
 ========================================
 Welcome to the UBS Kubernetes Analyzer Tool!
 ========================================
 Kind: Deployment
 Name: default/nginx-deployment
 Type: error
-Error: Deployment default/nginx-deployment has 3 replicas but  None is/are available
-Kubernetes Doc: {'version': 'v1', 'group': 'apps', 'kind': 'Deployment', 'field': 'spec.replicas'}
+Error: Deployment default/nginx-deployment has 2 replicas but  None is/are available
+Details: This means that although the deployment is set to have 2 replicas, none of the replicas are currently available for some reason. This could be due to issues such as resource constraints, network problems, or other issues that may be preventing the replicas from being available. It is recommended to investigate the specific cause of the unavailability and take appropriate action to resolve the issue.
 ```
 
+##Run ubsctl to analyse Namespace with Deployment
+```bash
+root@master:~/ubsctl# ubsctl analyser -k deploy -n default
+========================================
+Welcome to the UBS Kubernetes Analyzer Tool!
+========================================
+usage: ubsctl.py analyser [-h] [-k {pod,pods,deploy,deployment}] [-n NAMESPACE] [-d DEPLOYMENT]
 
+options:
+  -h, --help            show this help message and exit
+  -k {pod,pods,deploy,deployment}, --kind {pod,pods,deploy,deployment}
+                        Specify the resource kind (pod/pods or deploy/deployment)
+  -n NAMESPACE, --namespace NAMESPACE
+                        Specify the namespace
+  -d DEPLOYMENT, --deployment DEPLOYMENT
+                        Specify the deployment name
+
+root@master:~/ubsctl# ubsctl analyser -k deploy -n default -d nginx-deployment
+========================================
+Welcome to the UBS Kubernetes Analyzer Tool!
+========================================
+Kind: Deployment
+Name: default/nginx-deployment
+Type: error
+Error: Deployment default/nginx-deployment has 2 replicas but  None is/are available
+Details: This message indicates that the deployment named "default/nginx-deployment" has been configured to have 2 replicas, but currently there are no available replicas running. This could be due to various reasons such as resource constraints, node failures, or issues with the underlying infrastructure. To resolve this issue, you may need to investigate the root cause of why the replicas are not available and take appropriate actions to bring them back online. This could involve troubleshooting the cluster, checking resource constraints, or restarting the deployment.
+```
 

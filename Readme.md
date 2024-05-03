@@ -204,3 +204,51 @@ Error: Deployment default/nginx-deployment has 2 replicas but  None is/are avail
 Details: This message indicates that the deployment named "default/nginx-deployment" has been configured to have 2 replicas, but currently there are no available replicas running. This could be due to various reasons such as resource constraints, node failures, or issues with the underlying infrastructure. To resolve this issue, you may need to investigate the root cause of why the replicas are not available and take appropriate actions to bring them back online. This could involve troubleshooting the cluster, checking resource constraints, or restarting the deployment.
 ```
 
+## Run ubsctl to analyse PVC
+```bash
+root@master:~/ubsctl# kubectl get pvc
+NAME          STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+pvc-nfs-pv1   Pending                                      manual         <unset>                 19h
+```
+```bash
+
+root@master:~/ubsctl# ubsctl analyser -k pvc -n default
+========================================
+Welcome to the UBS Kubernetes Analyzer Tool!
+========================================
+Kind: PVC
+Name: default/pvc-nfs-pv1
+Type: error
+Error: ProvisioningFailed
+Reason: storageclass.storage.k8s.io "manual" not found
+Details: The error message "storageclass.storage.k8s.io 'manual' not found" means that the Kubernetes StorageClass object with the name "manual" was not found in the cluster.
+
+To resolve this issue, you can try the following steps:
+
+1. Check if the StorageClass object with the name "manual" exists in your cluster by running the following command:
+```
+kubectl get storageclass manual
+```
+
+2. If the StorageClass object does not exist, you can create it by creating a yaml file with the following content:
+```
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: manual
+provisioner: kubernetes.io/no-provisioner
+```
+Save the file and apply it to your cluster with the following command:
+```
+kubectl apply -f <filename.yaml>
+```
+
+3. After creating the StorageClass object, you can check if it has been successfully created by running the following command:
+```
+kubectl get storageclass manual
+```
+
+By following these steps, you should be able to resolve the error message "storageclass.storage.k8s.io 'manual' not found" in your Kubernetes cluster.
+
+```
+

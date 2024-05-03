@@ -226,27 +226,27 @@ Details: The error message "storageclass.storage.k8s.io 'manual' not found" mean
 To resolve this issue, you can try the following steps:
 
 1. Check if the StorageClass object with the name "manual" exists in your cluster by running the following command:
-```
+
 kubectl get storageclass manual
-```
+
 
 2. If the StorageClass object does not exist, you can create it by creating a yaml file with the following content:
-```
+
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: manual
 provisioner: kubernetes.io/no-provisioner
-```
+
 Save the file and apply it to your cluster with the following command:
-```
+
 kubectl apply -f <filename.yaml>
-```
+
 
 3. After creating the StorageClass object, you can check if it has been successfully created by running the following command:
-```
+
 kubectl get storageclass manual
-```
+
 
 By following these steps, you should be able to resolve the error message "storageclass.storage.k8s.io 'manual' not found" in your Kubernetes cluster.
 

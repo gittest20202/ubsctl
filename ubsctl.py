@@ -65,7 +65,7 @@ def main():
             analyzer = LogAnalyzer()
             results = analyzer.analyze_all_pods()
             for result in results:
-                  print(result)
+                  print_colored_result(result)
         else:
             logs_parser.print_help()
 

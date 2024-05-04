@@ -3,17 +3,23 @@ import argparse
 from modules.deployment_analyzer import DeploymentAnalyzer
 from modules.pod_analyzer import PodAnalyzer
 from modules.pvc_analyzer import PvcAnalyzer
+from modules.cluster_detail import KubernetesResourceViewer
 from modules.log_analyzer import LogAnalyzer
 from modules.utilies import print_colored_result
 from openai import OpenAI
+from termcolor import colored
 
 def main():
-    print("========================================")
-    print("Welcome to the UBS Kubernetes Analyzer Tool!")
-    print("========================================")
+    print(colored("==============================================","green"))
+    print(colored("Welcome to the UBS Kubernetes Analyzer Tool!", "green"))
+    print(colored("==============================================","green"))
+    print()
+    print()
     parser = argparse.ArgumentParser(description="Kubernetes Analyzer Tool")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     
+    # Cluster Details
+    analyser_parser = subparsers.add_parser("cluster-details", help="Cluster Details")
     # Analyser subcommand
     analyser_parser = subparsers.add_parser("analyser", help="Analyze Kubernetes resources")
     analyser_parser.add_argument("-k", "--kind", choices=["pod", "pods", "deploy", "deployment","pvc", "pvcs"], help="Specify the resource kind (pod/pods or deploy/deployment or pvc/pvcs)")
@@ -69,6 +75,9 @@ def main():
         else:
             logs_parser.print_help()
 
+    elif args.command == "cluster-details":
+         viewer = KubernetesResourceViewer()
+         viewer.print_resource_details()
     else:
         parser.print_help()
 

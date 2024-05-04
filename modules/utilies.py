@@ -3,17 +3,17 @@ from openai import OpenAI
 client = OpenAI()
 def print_colored_result(result):
     if result["kind"] == "Deployment":
-        print(colored("Kind:", "green"), result["kind"])
-        print(colored("Name:", "green"), result["name"])
-        print(colored("Type:", "green"), result["type"])
+        print(colored("Kind:", "green"), colored(result["kind"],"green"))
+        print(colored("Name:", "green"), colored(result["name"],"green"))
+        print(colored("Type:", "green"), colored(result["type"],"green"))
         for error in result["errors"]:
             message=[{"role": "user", "content": error["text"]}]
             completion = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=message
             )
-            print(colored("Error:", "red"), error["text"])
-            print(colored("Details:", "red"), completion.choices[0].message.content)
+            print(colored("Error:", "red"), colored(error["text"],"red"))
+            print(colored("Details:", "red"), colored(completion.choices[0].message.content,"green"))
             #print(colored("Kubernetes Doc:", "red"), error["kubernetes_doc"])
             print()
     elif result["kind"] == "Pod":

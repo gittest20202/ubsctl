@@ -1,6 +1,6 @@
-from kubernetes import client, config
 from tabulate import tabulate
 from termcolor import colored
+from kubernetes import client, config
 
 class KubernetesResourceViewer:
     def __init__(self):
@@ -13,37 +13,56 @@ class KubernetesResourceViewer:
 
     def get_resource_details(self):
         namespaces = self.api_instance.list_namespace().items
-        table_rows = []
+        resources_by_type = {
+            "Namespace": [],
+            "Deployment": [],
+            "Pod": [],
+            "Service": [],
+            "PVC": [],
+            "Ingress": []
+        }
+
         for namespace in namespaces:
             namespace_name = namespace.metadata.name
-            services = self.api_instance.list_namespaced_service(namespace=namespace_name).items
-            pods = self.api_instance.list_namespaced_pod(namespace=namespace_name).items
-            deployments = self.appsv1.list_namespaced_deployment(namespace=namespace_name).items
-            ingresses = self.networkingv1.list_namespaced_ingress(namespace=namespace_name).items
-            pvcs = self.corev1.list_namespaced_persistent_volume_claim(namespace=namespace_name).items
-            pvs = self.corev1.list_persistent_volume().items
-            table_rows.append([colored(f"Namespace: {namespace_name}", "green"), "", "", "", "", ""])
-            for service in services:
-                table_rows.append(["", colored("Service", "blue"), colored(service.metadata.name, "blue"), "", "", ""])
-            for pod in pods:
-                table_rows.append(["", colored("Pod", "yellow"), colored(pod.metadata.name, "yellow"), "", "", ""])
-            for deployment in deployments:
-                table_rows.append(["", colored("Deployment", "magenta"), colored(deployment.metadata.name, "magenta"), "", "", ""])
-            for ingress in ingresses:
-                table_rows.append(["", colored("Ingress", "cyan"), colored(ingress.metadata.name, "cyan"), "", "", ""])
-            for pvc in pvcs:
-                table_rows.append(["", colored("PVC", "red"), colored(pvc.metadata.name, "red"), "", "", ""])
-            for pv in pvs:
-                table_rows.append(["", colored("PV", "green"), colored(pv.metadata.name, "green"), "", "", ""])
+            resources_by_type["Namespace"].append(namespace_name)
 
-        return table_rows
+            services = self.api_instance.list_namespaced_service(namespace=namespace_name).items
+            for service in services:
+                resources_by_type["Service"].append(service.metadata.name)
+
+            pods = self.api_instance.list_namespaced_pod(namespace=namespace_name).items
+            for pod in pods:
+                resources_by_type["Pod"].append(pod.metadata.name)
+
+            deployments = self.appsv1.list_namespaced_deployment(namespace=namespace_name).items
+            for deployment in deployments:
+                resources_by_type["Deployment"].append(deployment.metadata.name)
+
+            ingresses = self.networkingv1.list_namespaced_ingress(namespace=namespace_name).items
+            for ingress in ingresses:
+                resources_by_type["Ingress"].append(ingress.metadata.name)
+
+            pvcs = self.corev1.list_namespaced_persistent_volume_claim(namespace=namespace_name).items
+            for pvc in pvcs:
+                resources_by_type["PVC"].append(pvc.metadata.name)
+
+        return resources_by_type
 
     def print_resource_details(self):
-        current_context = config.list_kube_config_contexts()[1]
-        print(colored("=======================================================================================","red"))
+        print(colored("=======================================================================================", "red"))
         print(colored("Cluster Information:", "green"))
-        print(colored("Cluster Name:","green"), colored(current_context['context']['cluster'],"green"))
-        print(colored("=======================================================================================","red"))
-        table_rows = self.get_resource_details()
-        headers = [colored("Namespace","green"), colored("Resource Type","green"), colored("Name","green"), colored("Service Type","green"), colored("Port","green"), colored("URL","green")]
-        print(tabulate(table_rows, headers=headers))
+        current_context = config.list_kube_config_contexts()[1]
+        print(colored("Cluster Name:", "green"), colored(current_context['context']['cluster'], "green"))
+        print(colored("=======================================================================================", "red"))
+
+        resources_by_type = self.get_resource_details()
+        table_rows = []
+        for resource_type, resource_names in resources_by_type.items():
+            for resource_name in resource_names:
+                table_rows.append([colored(resource_type, "green"), colored(resource_name, "white")])
+
+        headers = [colored("Resource Type", "green"), colored("Name", "green")]
+        print(tabulate(table_rows, headers=headers, tablefmt="plain"))
+
+viewer = KubernetesResourceViewer()
+viewer.print_resource_details()

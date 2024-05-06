@@ -53,11 +53,14 @@ def main():
             if args.namespace:
                 if args.deployment:
                     analyzer = DeploymentAnalyzer()
-                    results = analyzer.analyze_deployments_ns(args.namespace, args.deployment)
+                    results = analyzer.analyze_deployments(args.namespace, args.deployment)
                     for result in results:
                         print_colored_result(result)
                 else:
-                    analyser_parser.print_help()
+                    analyzer = DeploymentAnalyzer()
+                    results = analyzer.analyze_deployments(args.namespace)
+                    for result in results:
+                        print_colored_result(result)
             else:
                 analyzer = DeploymentAnalyzer()
                 results = analyzer.analyze_deployments()

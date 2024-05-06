@@ -1,5 +1,13 @@
 from termcolor import colored
 from openai import OpenAI
+from openai import AzureOpenAI
+import os
+
+api_version = os.environ["AZURE_API_VERSION"]
+azure_endpoint = os.environ["AZURE_AI_URL"]
+api_key = os.environ["AZURE_API_KEY"]
+
+client = AzureOpenAI(api_version=api_version, azure_endpoint=azure_endpoint, api_key=api_key)
 client = OpenAI()
 def print_colored_result(result):
     if result["kind"] == "Deployment":

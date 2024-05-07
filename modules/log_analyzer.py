@@ -2,7 +2,7 @@ import re
 from kubernetes import client, config
 import contextlib
 error_pattern = re.compile(r'(error|exception|fail)', re.IGNORECASE)
-tail_lines = 100
+tail_lines = 200
 
 class LogAnalyzer:
     def __init__(self):
@@ -31,7 +31,6 @@ class LogAnalyzer:
         with contextlib.suppress(client.exceptions.ApiException):
             config.load_kube_config()
             v1_core_api = client.CoreV1Api()
-            print("Analyzing logs")
             results = []
             namespaces = v1_core_api.list_namespace().items
             for namespace in namespaces:
@@ -46,6 +45,7 @@ class LogAnalyzer:
                                 failures = []
                                 pod_logs = self.get_pod_logs(pod_name, namespace_name)
                                 if pod_logs:
+                                   ptype = "error|exception|fail" 
                                    for line in pod_logs:
                                       if error_pattern.search(line):
                                          failures.append({"message": line})

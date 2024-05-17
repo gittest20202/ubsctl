@@ -6,7 +6,7 @@ import os
 #api_version = os.environ["AZURE_API_VERSION"]
 #azure_endpoint = os.environ["AZURE_AI_URL"]
 #api_key = os.environ["AZURE_API_KEY"]
-#model=os.environ["MODEL"]
+model='gpt-3.5-turbo'
 #client = AzureOpenAI(api_version=api_version, azure_endpoint=azure_endpoint, api_key=api_key)
 client = OpenAI()
 def print_colored_result(result):
